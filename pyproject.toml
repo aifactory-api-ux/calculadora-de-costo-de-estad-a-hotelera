@@ -1,0 +1,37 @@
+# Configuración de empaquetado (PEP 621) y de herramientas de desarrollo.
+# La librería es pura: en runtime solo usa la biblioteca estándar, por lo que
+# `dependencies` queda vacío y las herramientas (pytest, mypy, black) viven en
+# el extra de desarrollo "dev".
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hotel-booking"
+version = "0.1.0"
+description = "Librería de cálculo de costos de estadías hoteleras para el equipo de revenue"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "mypy>=1.8",
+    "black>=24.0",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+py-modules = ["booking"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "3.10"
+files = ["src"]
+
+[tool.black]
+target-version = ["py310"]

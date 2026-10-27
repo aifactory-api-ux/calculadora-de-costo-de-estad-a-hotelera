@@ -1,0 +1,114 @@
+```yaml
+openapi: 3.1.0
+info:
+  title: booking
+  version: 0.0.0
+  description: >-
+    Per SPEC.md section 3: "There is no HTTP layer in this project (none was
+    requested). The public API surface is the module's exported callables."
+    SPEC.md defines no HTTP endpoints, therefore `paths` is empty. The data
+    contracts of the two exported callables (`nights`, `nightly_rate`) are
+    recorded under `components` for reference only.
+paths: {}
+components:
+  schemas:
+    RoomType:
+      type: string
+      enum:
+        - single
+        - double
+        - suite
+    Decimal2:
+      type: string
+      format: decimal
+      pattern: '^-?[0-9]+\.[0-9]{2}$'
+    NightsReturn:
+      type: integer
+      minimum: 1
+      maximum: 30
+    MaxNights:
+      const: 30
+    BaseRates:
+      type: object
+      additionalProperties: false
+      required:
+        - single
+        - double
+        - suite
+      properties:
+        single:
+          const: '50.00'
+        double:
+          const: '80.00'
+        suite:
+          const: '150.00'
+    WeekendDays:
+      type: array
+      const:
+        - 4
+        - 5
+    WeekendSurchargeRate:
+      $ref: '#/components/schemas/Decimal2'
+    Cents:
+      const: '0.01'
+  x-callables:
+    - name: nights
+      import: from booking import nights
+      parameters:
+        - name: check_in
+          type: datetime.date
+          required: true
+        - name: check_out
+          type: datetime.date
+          required: true
+      returns:
+        schema:
+          $ref: '#/components/schemas/NightsReturn'
+    - name: nightly_rate
+      import: from booking import nightly_rate
+      parameters:
+        - name: day
+          type: datetime.date
+          required: true
+        - name: room
+          type: string
+          required: true
+          schema:
+            $ref: '#/components/schemas/RoomType'
+      returns:
+        schema:
+          $ref: '#/components/schemas/Decimal2'
+  x-error-contract:
+    - id: E1
+      condition: 'nights: check_in is not a date at all'
+      exception: TypeError
+      message_pattern: 'check_in must be a datetime.date, got {type}'
+    - id: E2
+      condition: 'nights: check_in is a datetime.datetime'
+      exception: TypeError
+      message_pattern: 'check_in must be a datetime.date, not datetime.datetime'
+    - id: E3
+      condition: 'nights: check_out is not a date / is a datetime.datetime'
+      exception: TypeError
+      message_pattern: 'check_out must be a datetime.date, got {type}'
+    - id: E4
+      condition: 'nights: check_out <= check_in'
+      exception: ValueError
+      message_pattern: 'check_out must be after check_in'
+    - id: E5
+      condition: 'nights: (check_out - check_in).days > 30'
+      exception: ValueError
+      message_pattern: 'stay cannot exceed 30 nights'
+    - id: E6
+      condition: 'nightly_rate: day is not a date / is a datetime.datetime'
+      exception: TypeError
+      message_pattern: 'day must be a datetime.date, got {type}'
+    - id: E7
+      condition: 'nightly_rate: room is not a str'
+      exception: TypeError
+      message_pattern: 'room must be a str, got {type}'
+    - id: E8
+      condition: 'nightly_rate: room is a str but not in BASE_RATES'
+      exception: ValueError
+      message_pattern: 'unknown room: {room!r}'
+```

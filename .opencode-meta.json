@@ -1,0 +1,29 @@
+{
+  "enums": {
+    "RoomType": ["single", "double", "suite"]
+  },
+  "exports": {
+    "src/booking.py": [
+      "RoomType",
+      "MAX_NIGHTS",
+      "BASE_RATES",
+      "WEEKEND_DAYS",
+      "WEEKEND_SURCHARGE_RATE",
+      "TOURIST_TAX_PER_GUEST_NIGHT",
+      "ROOM_CAPACITY",
+      "LONG_STAY_NIGHTS",
+      "LONG_STAY_DISCOUNT_RATE",
+      "CENTS",
+      "nights",
+      "nightly_rate",
+      "stay_total",
+      "_require_plain_date",
+      "_require_room",
+      "_calendar_days_between"
+    ],
+    "src/__init__.py": [],
+    "tests/test_booking.py": [],
+    "run.sh": [],
+    "docker-compose.yml": []
+  }
+}

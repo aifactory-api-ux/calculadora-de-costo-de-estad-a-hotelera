@@ -1,0 +1,16 @@
+# Ejecución aislada de la suite de pruebas de la librería hotel-booking.
+#
+# La librería es pura y no expone ningún servicio: este compose no publica
+# puertos, no define redes ni dependencias externas. El único servicio es una
+# tarea de un solo uso que instala `pytest` y corre `tests/test_booking.py`.
+#
+# Uso:  docker compose run --rm tests
+services:
+  tests:
+    image: python:3.11-slim
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+    command: >
+      sh -c "python -m pip install --quiet --disable-pip-version-check pytest>=8.0
+      && python -m pytest -q"
